@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>薪資期待模型</title>
+<style>
+  :root{
+    --bg:#eaeef3; --surface:#fff; --ink:#16202b; --muted:#5b6b7a;
+    --line:#d7dee7; --accent:#0e7458; --neg:#b4472e; --base:#334155;
+    --t1:#2563a8; --soft:#eef4f2; --chip:#f2f6f9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Helvetica Neue","PingFang TC","Noto Sans TC",system-ui,sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums}
+  .wrap{max-width:880px; margin:0 auto; padding:28px 20px 72px}
+  header h1{font-size:20px; margin:0 0 4px; letter-spacing:.01em}
+  header p{margin:0; color:var(--muted); font-size:13.5px}
+  .grid{display:grid; gap:18px; margin-top:22px}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:22px}
+  h2{font-size:15px; margin:0 0 3px}
+  .cap{color:var(--muted); font-size:12.5px; margin:0 0 4px}
+
+  .total-label{color:var(--muted); font-size:13px; margin:0}
+  .total{font-size:42px; font-weight:600; letter-spacing:-.01em; margin:2px 0 0}
+  .total small{font-size:19px; font-weight:500; color:var(--muted); margin-right:4px}
+  .sub{color:var(--muted); font-size:13.5px; margin:6px 0 18px}
+  .sub b{color:var(--ink); font-weight:600}
+  .brk{border-top:1px solid var(--line); margin-top:4px}
+  .brk .r{display:flex; justify-content:space-between; gap:12px; padding:7px 0; font-size:14px; border-bottom:1px solid var(--line)}
+  .brk .r span:first-child{color:var(--muted)}
+  .brk .r b{font-weight:600}
+  .brk .r.sum span:first-child, .brk .r.sum b{color:var(--ink); font-weight:600}
+  .brk .r.neg b{color:var(--neg)}
+  .brk .r.perf b{color:var(--accent)}
+  .brk .r.grand{border-bottom:none; padding-top:11px}
+  .brk .r.grand span:first-child{color:var(--ink); font-weight:600; font-size:15px}
+  .brk .r.grand b{font-size:16px}
+
+  .lever .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px}
+  .add{font-size:14px; font-weight:600; color:var(--accent)}
+  .note{color:var(--muted); font-size:12.5px; margin:6px 0 0; white-space:pre-line}
+  .valline{font-size:13.5px; color:var(--muted); margin:12px 0 6px}
+  .valline b{color:var(--ink)}
+  input[type=range]{width:100%; accent-color:var(--accent); height:22px}
+  .warn{color:var(--neg); font-size:12.5px; margin-top:8px; display:none}
+
+  .opt{display:flex; align-items:flex-start; gap:11px; padding:11px 0; border-top:1px solid var(--line)}
+  .opt:first-of-type{border-top:none}
+  .opt input{width:18px; height:18px; margin-top:2px; accent-color:var(--accent); flex:none}
+  .opt .body{flex:1}
+  .opt .lbl{font-size:14px; font-weight:500}
+  .opt .meta{color:var(--muted); font-size:12px; margin-top:2px}
+  .opt .amt{font-size:13.5px; font-weight:600; white-space:nowrap; color:var(--muted)}
+  .opt .amt.gap{color:var(--neg)}
+  .opt .amt.covered{color:var(--muted); font-weight:500}
+  .opt.req input{accent-color:var(--muted)}
+  .opt.req .amt{color:var(--muted)}
+  .tag{display:inline-block; font-size:11px; padding:1px 7px; border-radius:20px; background:var(--chip);
+    color:var(--muted); margin-left:6px; vertical-align:middle}
+  .tag.must{background:#fbeee9; color:var(--neg)}
+  .tag.sug{background:#e9f3ef; color:var(--accent)}
+
+  /* terms */
+  .term{display:flex; gap:10px; padding:11px 0; border-top:1px solid var(--line); font-size:13.5px}
+  .term:first-of-type{border-top:none}
+  .term .mk{color:var(--accent); font-weight:700; flex:none}
+  .termnote{color:var(--muted); font-size:12px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); white-space:pre-line}
+  .cashline{font-size:13.5px; color:var(--muted); margin-top:10px}
+  .cashline b{color:var(--ink)}
+  .cashline b.cash{color:var(--accent); font-weight:700}
+
+  .pfgroup{border-top:1px solid var(--line); padding:13px 0}
+  .pfgroup:first-of-type{border-top:none}
+  .pfgroup h3{font-size:13.5px; margin:0 0 8px; color:var(--ink)}
+  .pf{display:flex; align-items:center; gap:11px; padding:6px 0}
+  .pf input{width:18px; height:18px; accent-color:var(--accent); flex:none}
+  .pf .lbl{flex:1; font-size:13.5px}
+  .pf .pct{font-size:13px; font-weight:600; color:var(--accent); white-space:nowrap}
+  .pfsum{margin-top:10px; font-size:13.5px; color:var(--muted)}
+  .pfsum b{color:var(--accent)}
+
+  details{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:0 22px}
+  summary{cursor:pointer; padding:18px 0; font-weight:600; font-size:15px; list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"＋ "; color:var(--muted)}
+  details[open] summary::before{content:"－ "}
+  .field{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:9px 0; border-top:1px solid var(--line)}
+  .field label{font-size:13px; color:var(--muted); flex:1}
+  .field input{width:130px; text-align:right; padding:7px 10px; border:1px solid var(--line);
+    border-radius:8px; font:inherit; font-variant-numeric:tabular-nums; color:var(--ink)}
+  .field input:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:transparent}
+  .foot{color:var(--muted); font-size:12px; margin:18px 2px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>薪資期待模型</h1>
+    <p>拉動條件，即時對應到年度期望總薪資。全部數字為「稅後實拿」。</p>
+  </header>
+
+  <div class="grid">
+    <!-- HERO -->
+    <div class="card">
+      <p class="total-label">年度期望總薪資（稅後實拿）</p>
+      <p class="total"><small>NT$</small><span id="total">0</span></p>
+      <p class="sub">以 <b id="months">14</b> 個月計，月領約 <b>NT$<span id="monthly">0</span></b></p>
+    </div>
+
+    <!-- LEVER 1: TAIPEI -->
+    <div class="card lever">
+      <div class="top">
+        <h2>非現場工廠需求，進台北辦公室駐點待命</h2>
+        <span class="add" id="add_taipei">+NT$0</span>
+      </div>
+      <div class="valline">目前：每週 <b id="v_taipei">0</b> 天實體駐點</div>
+      <input type="range" id="s_taipei" min="0" max="5" step="1" value="0">
+      <p class="note" id="note_intro">著眼於與 Sara 探討的長遠合作願景，並兼顧家庭與工作之長期平衡，以利團隊穩定推進並避免人員變動的溝通成本。此天數為非現場建廠任務時進駐台北辦公室之天數；其餘在台工作日採 remote stand-by 模式在線待命協作。</p>
+      <p class="note" id="note_lo">・1–3 天/週：交通當日往返、不在台北過夜，以高鐵來回估算通勤成本，另計家庭分離成本。把對家庭的衝擊壓到最低。</p>
+      <p class="note" id="note_hi">・4–5 天/週：通勤頻率過高，改以台北租屋估算。此時等同週間長住台北，家庭分離補償較高，反映實質兩地分居的負擔。</p>
+    </div>
+
+    <!-- LEVER 2: TRAVEL -->
+    <div class="card lever">
+      <div class="top">
+        <h2>出差（台灣以外）時長</h2>
+        <span class="add" id="add_travel">+NT$0</span>
+      </div>
+      <div class="valline">目前：一年約 <b id="v_travel">3</b> 個月在台灣以外</div>
+      <input type="range" id="s_travel" min="0" max="9" step="1" value="3">
+      <p class="warn" id="warn_travel">9 個月以上不在此模型內，屬長期外派，需另行協商（外派津貼、眷屬安置、稅務平衡等）。</p>
+      <p class="note">出差指在台灣以外的時間。
+・1 個月以內：視為一般短期出差，不另計。
+・9 個月以上：改為長期外派另議。</p>
+    </div>
+
+    <!-- OFFSETS -->
+    <div class="card">
+      <h2>出差支援條件</h2>
+      <p class="cap">預設公司全額支援（全部勾選）＝薪資不變。每取消一項＝公司不負擔，該成本按稅前還原後回加到薪資（因改以課稅加薪補償）。住宿／租車／保險／伙食隨上方「出差時長」月數變動。</p>
+      <div id="offsets"></div>
+      <p class="cap" style="margin:16px 0 6px">以下為前提條件，須由公司負擔，不列入加給計算：</p>
+      <div id="musts"></div>
+    </div>
+
+    <!-- LEAVE TERMS -->
+    <div class="card">
+      <h2>特休與請假條件</h2>
+      <p class="cap">以下為隨薪資一併提出的條款，不計入上方金額。</p>
+      <div id="leave"></div>
+      <div style="margin-top:16px; padding-top:14px; border-top:1px dashed var(--line)">
+        <div class="valline" style="margin-top:0">未休特休折現試算：未休 <b id="v_unused">0</b> 天</div>
+        <input type="range" id="s_unused" min="0" max="15" step="1" value="0">
+        <div class="cashline">折現基準（固定薪資：基準＋台北＋出差，÷月數還原稅前）：稅前月工資 <b>NT$<span id="cash_gross">0</span></b>　→　每日 <b>NT$<span id="cash_day">0</span></b>　→　折現 <b class="cash">NT$<span id="cash_total">0</span></b></div>
+      </div>
+    </div>
+
+    <!-- PER DIEM TERMS -->
+    <div class="card">
+      <h2>Per Diem 與費用結算</h2>
+      <p class="cap">以下為隨薪資一併提出的條款，不計入上方金額。</p>
+      <div id="perdiem"></div>
+      <p class="termnote" id="pdnote"></p>
+    </div>
+
+    <!-- PERFORMANCE -->
+    <div class="card">
+      <h2>績效連動調薪</h2>
+      <p class="cap">同一工廠須依序達成（建置 → 良率 50% → 良率 90%）：勾選較高階會自動含較低階。達成後以年度期望總薪資（本項加成前）為基準，按百分比加成。</p>
+      <div id="perf"></div>
+      <p class="pfsum">已達標加成：<b id="perf_pct">0%</b>　（+NT$<span id="perf_amt">0</span>）</p>
+    </div>
+
+    <!-- ASSUMPTIONS -->
+    <details style="display:none">
+      <summary>模型假設（改成你的真實數字）</summary>
+      <div style="padding-bottom:20px">
+        <p class="foot" style="margin-top:0">以下為示意／估算值，請替換成你的真實數字。</p>
+        <div class="field"><label>稅後基準年薪（最低條件基準：0天台北＋2月出差＋全支援）</label><input type="number" id="p_base" value="3655000" step="10000"></div>
+        <div class="field"><label>高鐵商務車廂：單程票價</label><input type="number" id="p_hsr" value="1200" step="50"></div>
+        <div class="field"><label>通勤週數／年（扣掉出差、休假）</label><input type="number" id="p_weeks" value="48" step="1"></div>
+        <div class="field"><label>台北租屋：年租（4 天/週以上適用）</label><input type="number" id="p_rent" value="500000" step="10000"></div>
+        <div class="field"><label>家庭分離補償：每天基準（1–3 天）</label><input type="number" id="p_sep" value="110000" step="10000"></div>
+        <div class="field"><label>出差級距 1（1–3 月）每月加給</label><input type="number" id="p_t1" value="5000" step="1000"></div>
+        <div class="field"><label>出差級距 2（3–6 月）每月加給</label><input type="number" id="p_t2" value="20000" step="1000"></div>
+        <div class="field"><label>出差級距 3（6–9 月）每月加給</label><input type="number" id="p_t3" value="50000" step="1000"></div>
+        <div class="field"><label>伙食差額（有無廚房）：NT$／月</label><input type="number" id="p_kitchen" value="20000" step="1000"></div>
+        <div class="field"><label>公司負擔住宿：NT$／月</label><input type="number" id="p_accom" value="70000" step="1000"></div>
+        <div class="field"><label>公司負擔租車：NT$／月</label><input type="number" id="p_car" value="40000" step="1000"></div>
+        <div class="field"><label>公司負擔醫療保險：NT$／月</label><input type="number" id="p_ins" value="8000" step="500"></div>
+        <div class="field"><label>返台來回機票：每趟 NT$（US$1,500×匯率）</label><input type="number" id="p_flight" value="46000" step="2000"></div>
+        <div class="field"><label>跨境稅務申報／顧問：回加（固定，建議）</label><input type="number" id="p_tax" value="80000" step="10000"></div>
+        <div class="field"><label>有效稅率（稅後→稅前還原，用於折現與支援缺口，%）</label><input type="number" id="p_taxrate" value="18" step="1" min="0" max="45"></div>
+        <div class="field"><label>薪資月數（台灣常見 13–14）</label><input type="number" id="p_months" value="14" step="1" min="1"></div>
+      </div>
+    </details>
+  </div>
+</div>
+
+<script>
+  var state={ taipei:0, travel:3, unused:0,
+    offsets:{ kitchen:true, accom:true, car:true, ins:true, tax:true, fam:true },
+    perf:{} };
+
+  // ---- 出差支援條件（預設全包；取消＝回加） ----
+  var offsetDefs=[
+    {key:"kitchen", lbl:"飯店附廚房",             meta:"自炊 vs 外食的伙食差額，隨月數變動", type:"month"},
+    {key:"accom",   lbl:"公司負擔住宿",            meta:"extended-stay 含停車，隨月數變動",   type:"month"},
+    {key:"car",     lbl:"公司負擔租車或交通",       meta:"中型車含保險稅費，隨月數變動",       type:"month"},
+    {key:"ins",     lbl:"公司負擔出差醫療保險",     meta:"美國就醫昂貴，隨月數變動",           type:"month"},
+    {key:"fam",     lbl:"公司負擔返台來回機票",     meta:"特休條款的返台探親假所含機票：每連續停留 8 週一趟來回；取消則按機票加總回薪資", type:"flight"},
+    {key:"tax",     lbl:"公司負擔跨境稅務申報／顧問", meta:"美國停留可能觸發報稅義務", type:"flat"}
+  ];
+  var mustDefs=[
+    {lbl:"公司負擔簽證費用", meta:"美簽申請費約 US$205／人"},
+    {lbl:"公司負擔機票",     meta:"TPE–DFW 來回約 US$1,200–2,000"}
+  ];
+  var leaveTerms=[
+    "到職第一年即享 14 天全薪特休。",
+    "出差期間每連續停留 8 週，公司提供一次返台探親假（7–10 天全薪、含路程假，不扣抵特休）；來回機票由公司負擔，見「出差支援條件」。",
+    "長途跨國差旅往返的飛行當日為公假／公差，不扣個人特休或週末補休。",
+    "返台後第 1–2 天可申請居家辦公（WFH）或全薪調時差假。",
+    "年度未休畢特休可無條件展延一年，或年終按全薪（底薪＋固定津貼 ÷ 30 天）折算現金。"
+  ];
+  var perdiemTerms=[
+    "住宿（飯店或長租公寓）由公司直接結算或憑發票實報實銷；公務租車、油資、通訊、保險全數外加，不併入 Per Diem。",
+    "依主計總處「國外出差旅費報支要點」，生活費日支為單一總額（住宿 70%／膳食 20%／零用 10%）；美國未列名城市按「其他」約 US$190/天。住宿由公司負擔（供宿）時，膳雜（膳食＋零用）以日支之 30%（約 US$57/天）計，公司 Per Diem 未達此標準者，按差額補償入薪資。",
+    "建廠時期屬長期拓荒、外食成本固定，出差期間 Per Diem 全額發放，不適用長差折減。",
+    "Per Diem 以當地貨幣計算，依出差期間平均匯率撥入薪資帳戶。"
+  ];
+  var pdNote="資料來源：行政院主計總處「中央政府各機關派赴國外各地區出差人員生活費日支數額表」（逐年修訂）。US$190 為美國「其他」城市現值；送件前請確認達拉斯是否單獨列名，以及當年度生效表的實際數額。";
+
+  var ob=document.getElementById("offsets");
+  offsetDefs.forEach(function(o){
+    var row=document.createElement("label"); row.className="opt";
+    row.innerHTML='<input type="checkbox" id="o_'+o.key+'" checked>'+
+      '<span class="body"><span class="lbl">'+o.lbl+
+      (o.tag?'<span class="tag '+o.tag+'">建議補上</span>':'')+'</span>'+
+      '<span class="meta">'+o.meta+'</span></span>'+
+      '<span class="amt" id="amt_'+o.key+'"></span>';
+    ob.appendChild(row);
+    row.querySelector("input").addEventListener("change",function(e){
+      state.offsets[o.key]=e.target.checked; recompute();
+    });
+  });
+  var mb=document.getElementById("musts");
+  mustDefs.forEach(function(m){
+    var row=document.createElement("div"); row.className="opt req";
+    row.innerHTML='<input type="checkbox" checked disabled>'+
+      '<span class="body"><span class="lbl">'+m.lbl+'</span></span>';
+    mb.appendChild(row);
+  });
+  function fillTerms(id, arr){
+    var box=document.getElementById(id);
+    arr.forEach(function(t){
+      var row=document.createElement("div"); row.className="term";
+      row.innerHTML='<span class="mk">✓</span><span>'+t+'</span>';
+      box.appendChild(row);
+    });
+  }
+  fillTerms("leave", leaveTerms);
+  fillTerms("perdiem", perdiemTerms);
+  document.getElementById("pdnote").textContent=pdNote;
+
+  // ---- 績效連動 ----
+  var perfDefs=[
+    {group:"達拉斯工廠", items:[
+      {key:"d_build", lbl:"建置完成並開始有產出", pct:10},
+      {key:"d_50",    lbl:"良率達 50%", pct:5},
+      {key:"d_90",    lbl:"良率達 90%", pct:5}]},
+    {group:"台灣工廠", items:[
+      {key:"t_build", lbl:"建置完成並開始有產出", pct:10},
+      {key:"t_50",    lbl:"良率達 50%", pct:5},
+      {key:"t_90",    lbl:"良率達 90%", pct:5}]},
+    {group:"越南工廠", items:[
+      {key:"v_build", lbl:"建置完成並開始有產出", pct:10},
+      {key:"v_50",    lbl:"良率達 50%", pct:5},
+      {key:"v_90",    lbl:"良率達 90%", pct:5}]}
+  ];
+  var pb=document.getElementById("perf");
+  perfDefs.forEach(function(g){
+    var box=document.createElement("div"); box.className="pfgroup";
+    var h=document.createElement("h3"); h.textContent=g.group; box.appendChild(h);
+    var keys=g.items.map(function(it){ return it.key; });
+    g.items.forEach(function(it, idx){
+      state.perf[it.key]={pct:it.pct, on:false};
+      var row=document.createElement("label"); row.className="pf";
+      row.innerHTML='<input type="checkbox" id="pf_'+it.key+'">'+
+        '<span class="lbl">'+it.lbl+'</span><span class="pct">+'+it.pct+'%</span>';
+      box.appendChild(row);
+      row.querySelector("input").addEventListener("change",function(e){
+        var j;
+        if(e.target.checked){ for(j=0;j<=idx;j++){ state.perf[keys[j]].on=true; } }
+        else { for(j=idx;j<keys.length;j++){ state.perf[keys[j]].on=false; } }
+        keys.forEach(function(k){ document.getElementById("pf_"+k).checked=state.perf[k].on; });
+        recompute();
+      });
+    });
+    pb.appendChild(box);
+  });
+
+  // ---- sliders ----
+  document.getElementById("s_taipei").addEventListener("input",function(e){
+    state.taipei=+e.target.value; document.getElementById("v_taipei").textContent=e.target.value; recompute();
+  });
+  document.getElementById("s_travel").addEventListener("input",function(e){
+    state.travel=+e.target.value; document.getElementById("v_travel").textContent=e.target.value; recompute();
+  });
+  document.getElementById("s_unused").addEventListener("input",function(e){
+    state.unused=+e.target.value; document.getElementById("v_unused").textContent=e.target.value; recompute();
+  });
+
+  var pIds=["p_base","p_hsr","p_weeks","p_rent","p_sep","p_t1","p_t2","p_t3",
+            "p_kitchen","p_accom","p_car","p_ins","p_flight","p_tax",
+            "p_taxrate","p_months"];
+  pIds.forEach(function(id){ document.getElementById(id).addEventListener("input",recompute); });
+  function P(id){ return +document.getElementById(id).value||0; }
+  function fmt(n){ return Math.round(n).toLocaleString("en-US"); }
+  function clamp(x,lo,hi){ return Math.max(lo,Math.min(hi,x)); }
+
+  function recompute(){
+    var base=P("p_base");
+
+    // 台北駐點
+    var d=state.taipei, sep=Math.min(d,3)*P("p_sep");
+    if(d>=4) sep+=2*P("p_sep");
+    if(d>=5) sep+=3*P("p_sep");
+    var transport = d<=3 ? d*(P("p_hsr")*2)*P("p_weeks") : P("p_rent");
+    var taipei = d===0 ? 0 : transport+sep;
+    document.getElementById("note_lo").style.display = (d>=1 && d<=3) ? "" : "none";
+    document.getElementById("note_hi").style.display = (d>=4) ? "" : "none";
+
+    // 出差時長（累進）
+    var m=state.travel;
+    var travel = clamp(m-1,0,2)*P("p_t1") + clamp(m-3,0,3)*P("p_t2") + clamp(m-6,0,3)*P("p_t3");
+    document.getElementById("warn_travel").style.display = m>=9 ? "block" : "none";
+
+    // 返台來回機票：配合探親假，每連續停留 8 週一趟
+    var famTrips = Math.floor(m*4.345/8);
+
+    // 支援缺口（取消＝回加）
+    var amts={
+      kitchen: P("p_kitchen")*m,
+      accom:   P("p_accom")*m,
+      car:     P("p_car")*m,
+      ins:     P("p_ins")*m,
+      fam:     famTrips*P("p_flight"),
+      tax:     P("p_tax")
+    };
+    var gap=0;
+    var grUp=1/(1-(P("p_taxrate")/100)); // 稅前還原倍率（不打勾＝改用課稅加薪補，故還原）
+    offsetDefs.forEach(function(o){
+      var el=document.getElementById("amt_"+o.key);
+      if(o.key==="fam" && famTrips===0){ el.textContent="不適用（未達 8 週）"; el.className="amt covered"; return; }
+      var a=amts[o.key]*grUp;
+      if(state.offsets[o.key]){
+        el.textContent = o.key==="fam" ? ("公司負擔中（"+famTrips+" 趟）") : "公司負擔中";
+        el.className="amt covered";
+      } else {
+        el.textContent="＋NT$"+fmt(a); el.className="amt gap"; gap+=a;
+      }
+    });
+
+    var subtotal = base + taipei + travel + gap;
+
+    // 績效
+    var pct=0;
+    Object.keys(state.perf).forEach(function(k){ if(state.perf[k].on) pct+=state.perf[k].pct; });
+    var perfAmt = subtotal*pct/100;
+    var grand = subtotal + perfAmt;
+
+    document.getElementById("add_taipei").textContent="+NT$"+fmt(taipei);
+    document.getElementById("add_travel").textContent="+NT$"+fmt(travel);
+    document.getElementById("perf_pct").textContent=pct+"%";
+    document.getElementById("perf_amt").textContent=fmt(perfAmt);
+    document.getElementById("months").textContent=P("p_months")||14;
+    document.getElementById("total").textContent=fmt(grand);
+    document.getElementById("monthly").textContent=fmt(grand/(P("p_months")||14));
+
+    // 未休特休折現：連動固定薪資（基準＋台北＋出差，排除折抵與績效）÷ 月數，還原稅前 ÷ 30
+    var monthsN=P("p_months")||14;
+    var salaryFixed = base + taipei + travel;
+    var grossMonthly = (salaryFixed/monthsN)/(1 - (P("p_taxrate")/100));
+    var dayRate=grossMonthly/30;
+    document.getElementById("cash_gross").textContent=fmt(grossMonthly);
+    document.getElementById("cash_day").textContent=fmt(dayRate);
+    document.getElementById("cash_total").textContent=fmt(dayRate*(state.unused||0));
+  }
+  recompute();
+</script>
+</body>
+</html>
