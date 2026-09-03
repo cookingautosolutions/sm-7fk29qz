@@ -152,8 +152,8 @@
       <p class="cap">以下為隨薪資一併提出的條款，不計入上方金額。</p>
       <div id="leave"></div>
       <div style="margin-top:16px; padding-top:14px; border-top:1px dashed var(--line)">
-        <div class="valline" style="margin-top:0">未休特休折現試算：未休 <b id="v_unused">5</b> 天</div>
-        <input type="range" id="s_unused" min="0" max="15" step="1" value="5">
+        <div class="valline" style="margin-top:0">未休特休折現試算：未休 <b id="v_unused">0</b> 天</div>
+        <input type="range" id="s_unused" min="0" max="15" step="1" value="0">
         <div class="cashline">折現基準（固定薪資：基準＋台北＋出差，÷月數還原稅前）：稅前月工資 <b>NT$<span id="cash_gross">0</span></b>　→　每日 <b>NT$<span id="cash_day">0</span></b>　→　折現 <b class="cash">NT$<span id="cash_total">0</span></b></div>
       </div>
     </div>
@@ -175,7 +175,7 @@
     </div>
 
     <!-- ASSUMPTIONS -->
-    <details>
+    <details style="display:none">
       <summary>模型假設（改成你的真實數字）</summary>
       <div style="padding-bottom:20px">
         <p class="foot" style="margin-top:0">以下為示意／估算值，請替換成你的真實數字。</p>
@@ -198,11 +198,10 @@
       </div>
     </details>
   </div>
-  <p class="foot">此頁純在瀏覽器本機計算，不會上傳任何資料。薪資協商用途，建議直接傳檔或以私密連結分享。</p>
 </div>
 
 <script>
-  var state={ taipei:0, travel:3, unused:5,
+  var state={ taipei:0, travel:3, unused:0,
     offsets:{ kitchen:true, accom:true, car:true, ins:true, tax:true, fam:true },
     perf:{} };
 
@@ -251,8 +250,7 @@
   mustDefs.forEach(function(m){
     var row=document.createElement("div"); row.className="opt req";
     row.innerHTML='<input type="checkbox" checked disabled>'+
-      '<span class="body"><span class="lbl">'+m.lbl+'</span>'+
-      '<span class="meta">'+m.meta+'</span></span>';
+      '<span class="body"><span class="lbl">'+m.lbl+'</span></span>';
     mb.appendChild(row);
   });
   function fillTerms(id, arr){
