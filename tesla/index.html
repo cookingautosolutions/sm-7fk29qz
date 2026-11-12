@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>rePressurizer | COOKING tennis</title>
+<meta name="description" content="rePressurizer restores the internal pressure of tennis balls. Standard Schrader valve, automatic 30 psi pressure control. Play longer. Spend less. Bounce like new.">
+<link rel="icon" href="../assets/logo-icon.png">
+<style>
+  :root{--orange:#C8622A;--ink:#171a20;--grey:#5c5e62;--light:#f4f4f4}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+  body{font-family:"Gotham SSm","Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif;color:#fff;background:#000;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  img,video{display:block}
+
+  header{position:fixed;inset:0 0 auto 0;z-index:30;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;transition:background .3s}
+  header.solid{background:rgba(0,0,0,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  header img{height:30px;width:auto}
+  header nav{display:flex;gap:4px}
+  header nav a{font-size:14px;font-weight:500;padding:6px 14px;border-radius:4px;transition:background .25s}
+  header nav a:hover{background:rgba(255,255,255,.12)}
+  header .right a{font-size:14px;font-weight:500;padding:6px 14px;border-radius:4px}
+  header .right a:hover{background:rgba(255,255,255,.12)}
+
+  .panel{position:relative;height:100vh;height:100svh;min-height:560px;scroll-snap-align:start;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:15vh 24px 9vh;text-align:center}
+  .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .bg.contain{object-fit:contain;background:transparent;inset:auto 0;top:27vh;height:45vh}
+  .bg.wide{object-fit:contain;inset:auto 0;top:22vh;height:56vh}
+  .shade{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.7) 100%)}
+  .top,.bottom{position:relative;z-index:2}
+  .top h1,.top h2{font-size:clamp(34px,4.4vw,48px);font-weight:500;letter-spacing:-.005em;line-height:1.1}
+  .top p{font-size:15px;margin-top:10px;color:rgba(255,255,255,.88)}
+  .top p a{text-decoration:underline;text-underline-offset:3px}
+  .btns{display:flex;gap:22px;justify-content:center;flex-wrap:wrap}
+  .btn{min-width:264px;padding:12px 24px;border-radius:4px;font-size:14px;font-weight:500;transition:background .25s,color .25s}
+  .btn.dark{background:rgba(23,26,32,.85);color:#fff}
+  .btn.dark:hover{background:var(--ink)}
+  .btn.light{background:rgba(244,244,244,.65);color:var(--ink)}
+  .btn.light:hover{background:#f4f4f4}
+  .btn.orange{background:var(--orange);color:#fff}
+  .btn.orange:hover{background:#b2551f}
+  .chev{margin-top:26px;width:22px;height:22px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg);animation:bob 1.6s infinite;opacity:.8;margin-left:auto;margin-right:auto}
+  @keyframes bob{50%{transform:translateY(6px) rotate(45deg)}}
+
+  .specs{display:flex;justify-content:center;gap:clamp(24px,6vw,80px);margin-bottom:34px}
+  .specs .s{min-width:120px}
+  .specs .v{font-size:clamp(28px,3.2vw,40px);font-weight:500;line-height:1.05}
+  .specs .v small{font-size:.45em;font-weight:500;margin-left:3px}
+  .specs .k{font-size:13px;color:rgba(255,255,255,.85);margin-top:6px}
+
+  .fade{opacity:0;transform:translateY(16px);transition:opacity 1s ease .15s,transform 1s ease .15s}
+  .panel.in .fade{opacity:1;transform:none}
+
+  /* data panel */
+  .data-table{position:relative;z-index:2;margin:0 auto;width:min(720px,100%);background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;padding:22px 26px;text-align:left}
+  .data-table table{width:100%;border-collapse:collapse;font-size:15px}
+  .data-table th,.data-table td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.14)}
+  .data-table th{font-weight:500;color:rgba(255,255,255,.7);font-size:13px}
+  .data-table td.r{color:var(--orange);font-weight:600}
+  .data-table .note{font-size:11px;color:rgba(255,255,255,.6);margin-top:12px;line-height:1.55}
+
+  /* spec sheet (non-snap tall panel) */
+  .sheet{scroll-snap-align:start;background:#000;min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr;align-items:center}
+  .sheet img{width:100%;height:100vh;object-fit:cover}
+  .sheet .list{padding:80px clamp(24px,5vw,72px)}
+  .sheet h2{font-size:clamp(30px,3.4vw,40px);font-weight:500;margin-bottom:34px}
+  .sheet dl{display:grid;grid-template-columns:1fr 1fr;gap:26px 30px}
+  .sheet dt{font-size:13px;color:rgba(255,255,255,.62)}
+  .sheet dd{font-size:17px;font-weight:500;margin-top:4px}
+  .sheet .box{margin-top:34px;padding-top:24px;border-top:1px solid rgba(255,255,255,.16);font-size:14px;color:rgba(255,255,255,.8);line-height:1.7}
+  .sheet .box b{color:#fff;font-weight:500}
+
+  /* faq */
+  .faq{scroll-snap-align:start;background:#fff;color:var(--ink);min-height:100vh;padding:120px 24px 80px}
+  .faq .in{max-width:760px;margin:0 auto}
+  .faq h2{font-size:clamp(30px,3.4vw,40px);font-weight:500;text-align:center;margin-bottom:40px}
+  details{border-bottom:1px solid #e2e3e3}
+  summary{list-style:none;cursor:pointer;padding:22px 0;font-size:17px;font-weight:500;display:flex;justify-content:space-between}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--grey);border-bottom:2px solid var(--grey);transform:rotate(45deg);transition:transform .25s;margin-top:4px}
+  details[open] summary::after{transform:rotate(-135deg);margin-top:10px}
+  details ol,details p{padding:0 0 22px 20px;color:var(--grey);font-size:15px;line-height:1.65}
+  details p{padding-left:0}
+  .safety{max-width:760px;margin:44px auto 0;font-size:12px;color:var(--grey);line-height:1.7}
+
+  footer{background:#fff;color:var(--grey);font-size:12px;text-align:center;padding:0 24px 40px;scroll-snap-align:end}
+  footer a{margin:0 10px}
+
+  /* video modal-free inline: how-to panel */
+  .sound{position:absolute;right:24px;bottom:24px;z-index:3;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:4px;font-size:12px;padding:6px 12px;cursor:pointer}
+
+  @media (max-width:860px){
+    header{padding:0 18px}
+    header nav{display:none}
+    .panel{padding:13vh 18px 7vh}
+    .btns{flex-direction:column;gap:12px;width:100%;align-items:center}
+    .btn{width:100%;max-width:340px;min-width:0}
+    .specs{gap:18px}
+    .specs .s{min-width:0}
+    .specs .k{font-size:11px}
+    .bg.contain{top:24vh;height:42vh}
+    .bg.wide{top:30vh;height:34vh}
+    .sheet{grid-template-columns:1fr}
+    .sheet img{height:55vh}
+    .sheet dl{grid-template-columns:1fr 1fr}
+    .data-table{padding:14px 14px}
+    .data-table table{font-size:13px}
+    html{scroll-snap-type:none}
+  }
+  @media (prefers-reduced-motion:reduce){.fade{opacity:1;transform:none;transition:none}.chev{animation:none}}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <a href="#top"><img src="../assets/logo-light.png" alt="ZERO WASTE · COOKING tennis"></a>
+  <nav><a href="#data">Test Data</a><a href="#valve">Valve</a><a href="#how">How It Works</a><a href="#specs">Specs</a><a href="#support">Support</a></nav>
+  <div class="right"><a href="#buy" data-amazon>Buy</a></div>
+</header>
+
+<main>
+
+<section class="panel" id="top">
+  <video class="bg contain" src="../assets/hero-pressurize.mp4" poster="../assets/hero-poster.jpg" autoplay muted loop playsinline aria-label="Tennis balls inside the rePressurizer as pressure builds"></video>
+  <div class="shade"></div>
+  <div class="top fade">
+    <h1>rePressurizer</h1>
+    <p>Play Longer. Spend Less. Bounce Like New.</p>
+  </div>
+  <div class="bottom fade">
+    <div class="specs">
+      <div class="s"><p class="v">3</p><p class="k">Balls per Canister</p></div>
+      <div class="s"><p class="v">30<small>psi</small></p><p class="k">Automatic Pressure Control</p></div>
+      <div class="s"><p class="v">99<small>%</small></p><p class="k">Bounce Restored*</p></div>
+    </div>
+    <div class="btns"><a class="btn dark" href="#buy" data-amazon>Buy on Amazon</a><a class="btn light" href="#how">Watch How It Works</a></div>
+    <div class="chev" aria-hidden="true"></div>
+  </div>
+</section>
+
+<section class="panel" id="data">
+  <img class="bg" src="../assets/product-pressurized.jpg" alt="" style="opacity:.45">
+  <div class="shade"></div>
+  <div class="top fade">
+    <h2>Measured. Not Guessed.</h2>
+    <p>Dropped from a fixed height. Rebound measured in centimeters.</p>
+  </div>
+  <div class="bottom fade" style="width:100%">
+    <div class="data-table">
+      <table>
+        <tr><th></th><th>New Can</th><th>3 Months, Flat</th><th>After rePressurizer</th></tr>
+        <tr><td>A · First bounce</td><td>83.4</td><td>76.3</td><td class="r">83.3</td></tr>
+        <tr><td>B · Second bounce</td><td>45.6</td><td>22.0</td><td class="r">45.1</td></tr>
+      </table>
+      <p class="note">*6 balls, same brand and model, from 2 cans: one freshly opened, one played and left for 3 months after losing pressure. Each value is the average of 3 balls in cm. 99% = second-bounce height after rePressurizer vs. a new can. rePressurizer co-developed by COOKING tennis and its manufacturing partner.</p>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="valve">
+  <video class="bg contain" src="../assets/turntable.mp4" poster="../assets/turntable-poster.jpg" autoplay muted loop playsinline aria-label="rePressurizer canister rotating on a turntable"></video>
+  <div class="shade"></div>
+  <div class="top fade">
+    <h2>Any Pump. No Gauge.</h2>
+    <p>Standard Schrader valve. Pump until the control valve vents at 30 psi.</p>
+  </div>
+  <div class="bottom fade">
+    <div class="specs">
+      <div class="s"><p class="v">Schrader</p><p class="k">Car, Bike and Ball Pumps</p></div>
+      <div class="s"><p class="v">Auto</p><p class="k">Vents at Set Pressure</p></div>
+      <div class="s"><p class="v">1 Pull</p><p class="k">Ring-Pull Release</p></div>
+    </div>
+    <div class="btns"><a class="btn dark" href="#buy" data-amazon>Buy on Amazon</a><a class="btn light" href="#specs">View Specs</a></div>
+  </div>
+</section>
+
+<section class="panel" id="seal">
+  <img class="bg contain" src="../assets/seal.jpg" alt="Hands tightening the rePressurizer lid">
+  <div class="shade"></div>
+  <div class="top fade">
+    <h2>Click. Sealed.</h2>
+    <p>The securing pin only slides in once the lid is air-tight.</p>
+  </div>
+  <div class="bottom fade">
+    <div class="btns"><a class="btn dark" href="#buy" data-amazon>Buy on Amazon</a><a class="btn light" href="#how">How It Works</a></div>
+  </div>
+</section>
+
+<section class="panel" id="how">
+  <video class="bg wide" id="howv" src="../assets/how-to.mp4" poster="../assets/how-to-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="rePressurizer instruction video"></video>
+  <div class="shade"></div>
+  <div class="top fade">
+    <h2>Pump. Rest. Play.</h2>
+    <p>Load up to 3 balls · Pump to 30 psi · Rest for several days</p>
+  </div>
+  <div class="bottom fade">
+    <div class="btns"><a class="btn dark" href="#buy" data-amazon>Buy on Amazon</a><a class="btn light" href="#support">Support</a></div>
+  </div>
+  <button class="sound" id="snd" type="button">Sound on</button>
+</section>
+
+<section class="sheet" id="specs">
+  <img src="../assets/box-open.jpg" alt="rePressurizer lid inside the opened box">
+  <div class="list">
+    <h2>rePressurizer Specs</h2>
+    <dl>
+      <div><dt>Capacity</dt><dd>3 tennis balls</dd></div>
+      <div><dt>Preset Release Pressure</dt><dd>≈30 psi</dd></div>
+      <div><dt>Maximum Operating Pressure</dt><dd>80 psi</dd></div>
+      <div><dt>Inflation Valve</dt><dd>Schrader (US type)</dd></div>
+      <div><dt>Dimensions</dt><dd>300 × 106 × 108 mm</dd></div>
+      <div><dt>Weight</dt><dd>960 g</dd></div>
+      <div><dt>Model</dt><dd>TBRP-25100</dd></div>
+      <div><dt>Designed in</dt><dd>Taichung, Taiwan</dd></div>
+    </dl>
+    <p class="box"><b>In the box:</b> pressurizer bottle ×1, pressurizer lid ×1, securing pin ×1, instructions in English, 中文, Español and 日本語. Air pump not included.</p>
+  </div>
+</section>
+
+<section class="faq" id="support">
+  <div class="in">
+    <h2>Support</h2>
+    <details><summary>The canister won't hold pressure</summary><ol><li>Make sure the lid is tightened all the way.</li><li>Check for air leaks at the pump nozzle connection.</li><li>Confirm the pressure control valve is properly secured.</li></ol></details>
+    <details><summary>The bounce isn't fully restored</summary><ol><li>Balls that lost a lot of pressure may need a longer rest to reach balance.</li><li>Make sure the pressure is maintained at 30 psi or higher.</li><li>Severely worn-out balls may not fully recover.</li></ol></details>
+    <details><summary>I can't inflate it</summary><ol><li>Check that your air pump is working.</li><li>Make sure the nozzle is correctly aligned with the inflation valve.</li><li>If the problem persists, contact customer support.</li></ol></details>
+    <details><summary>Do I need a special pump?</summary><p>No. Any pump with a standard Schrader (US-style) head works: ball pumps, bike floor pumps, tire inflators, or a gas-station air hose. A pump isn't included.</p></details>
+    <p class="safety">Safety: Stop inflating once the pressure control valve starts releasing air; overinflation may damage the pressurizer. Do not exceed 80 psi. Avoid direct sunlight and high temperatures. Make sure the lid is fully tightened so the securing pin can be inserted. Keep out of reach of children. Stop using it if you notice cracks or valve malfunctions. The pressure control valve and inflation port are sealed with a patented locking method — do not attempt to disassemble the lid.</p>
+  </div>
+</section>
+
+<section class="panel" id="buy">
+  <img class="bg contain" src="../assets/product-hero.jpg" alt="">
+  <div class="shade"></div>
+  <div class="top fade">
+    <h2>Bounce Like New.</h2>
+    <p>Available on Amazon US</p>
+  </div>
+  <div class="bottom fade">
+    <div class="btns"><a class="btn orange" href="#buy" data-amazon>Buy on Amazon</a></div>
+  </div>
+</section>
+
+</main>
+<footer><p style="padding-top:28px">COOKING tennis © <span class="yr"></span> · <a href="#support">Support</a> · <a href="#specs">Specs</a></p></footer>
+
+<script>
+  // Put the Amazon listing URL here; every Buy button uses it.
+  const AMAZON_URL = "";
+  document.querySelectorAll("[data-amazon]").forEach(a=>{ if(AMAZON_URL){a.href=AMAZON_URL;a.target="_blank";a.rel="noopener";} });
+  document.querySelectorAll(".yr").forEach(e=>e.textContent=new Date().getFullYear());
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add("in"); }),{threshold:.35});
+  document.querySelectorAll(".panel").forEach(p=>io.observe(p));
+  const hdr=document.getElementById("hdr");
+  addEventListener("scroll",()=>hdr.classList.toggle("solid",scrollY>window.innerHeight*.6),{passive:true});
+  const v=document.getElementById("howv"), s=document.getElementById("snd");
+  s.addEventListener("click",()=>{ v.muted=!v.muted; if(!v.muted){v.currentTime=0;v.play();} s.textContent=v.muted?"Sound on":"Sound off"; });
+</script>
+</body>
+</html>
