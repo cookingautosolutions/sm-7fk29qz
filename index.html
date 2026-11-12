@@ -163,6 +163,12 @@
   footer{font-size:12px;color:var(--sub);padding:22px 0 40px}
   footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 
+  /* Taiwan-only banner, shown when the URL has ?tw=1 */
+  .tw-bar{display:none;background:var(--orange);color:#fff;text-align:center;font-size:15px;line-height:1.4;padding:10px 16px;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+  .tw-bar.on{display:block}
+  .tw-bar a{color:#fff;font-weight:600;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+  .tw-bar a:hover{opacity:.85}
+
   .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s ease,transform .9s ease}
   .reveal.in{opacity:1;transform:none}
 
@@ -188,6 +194,7 @@
 </head>
 <body>
 
+<div class="tw-bar" id="tw-bar" lang="zh-Hant-TW">台灣買家：美國同價、台灣出貨 → <a href="https://ig.me/m/cookingtennis_global" target="_blank" rel="noopener" data-track="tw-banner">IG 私訊</a></div>
 <div class="gnav"><div class="wrap"><img src="assets/logo-dark.png" alt="ZERO WASTE · COOKING tennis"><span>Designed in California and Taichung</span></div></div>
 <nav class="lnav"><div class="wrap">
   <a class="name" href="#top"><img src="assets/logo-icon.png" alt="" width="30" height="30">rePressurizer</a>
@@ -383,6 +390,31 @@
   const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in");
       e.target.querySelectorAll(".fill").forEach(f=>f.style.width=(f.dataset.w/90*100)+"%"); io.unobserve(e.target);} }),{threshold:.15});
   document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+  // Taiwan banner: visible only when the page is opened with ?tw=1 (e.g. from Taiwan ads)
+  const IS_TW = new URLSearchParams(location.search).get("tw") === "1";
+  if (IS_TW) document.getElementById("tw-bar").classList.add("on");
+
+  // Meta Pixel: paste the Pixel ID from Meta Events Manager here. Empty = pixel off.
+  const META_PIXEL_ID = "";
+  if (META_PIXEL_ID) {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq("init", META_PIXEL_ID);
+    fbq("track", "PageView");
+  }
+  // Custom events: ClickAmazon and ClickInstagram, with where the click happened
+  document.addEventListener("click", e => {
+    const a = e.target.closest("a[href]");
+    if (!a || !window.fbq) return;
+    const href = a.href;
+    const params = { placement: a.dataset.track || (a.closest("section,header,nav,footer,.tw-bar")||{}).id || "page", tw: IS_TW ? 1 : 0 };
+    if (/amazon\./i.test(href)) fbq("trackCustom", "ClickAmazon", Object.assign(params, { link: href }));
+    else if (/instagram\.com|ig\.me/i.test(href)) fbq("trackCustom", "ClickInstagram", params);
+  });
 </script>
 </body>
 </html>
