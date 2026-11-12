@@ -86,6 +86,17 @@
   .tile.dark p{color:#a1a1a6}
   .tile .big-num{font-size:88px;font-weight:700;letter-spacing:-.04em;margin-top:auto;line-height:1}
   .tile .big-num small{font-size:32px}
+  .tile.wide{grid-column:1/-1;min-height:auto}
+  .tile.principle{grid-column:1/-1;padding:0;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);min-height:auto;overflow:hidden}
+  .principle .p-img{background:#000;display:flex;align-items:center;justify-content:center;padding:28px 0}
+  .principle .p-img img{max-height:520px;width:auto}
+  .principle .p-txt{padding:48px 44px;display:flex;flex-direction:column;justify-content:center}
+  .principle .p-txt p+p{margin-top:12px}
+  .p-steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px;counter-reset:s}
+  .p-steps li{border-top:2px solid #333;padding-top:12px;font-size:14px;color:#a1a1a6;line-height:1.4;counter-increment:s}
+  .p-steps li b{display:block;color:#f5f5f7;font-weight:600;font-size:15px;margin-bottom:4px}
+  .p-steps li b::before{content:counter(s) ". ";color:var(--orange)}
+  .p-steps li:nth-child(2){border-color:var(--orange)}
   .tile.photo{padding:0;overflow:hidden;background:#000;position:relative}
   .tile.photo img,.tile.photo video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 
@@ -159,12 +170,13 @@
     section{padding:84px 0}
     .stats,.steps,.specs{grid-template-columns:1fr}
     .tiles,.box,.spot .grid{grid-template-columns:1fr}
+    .tile.principle{grid-template-columns:1fr}
+    .principle .p-img img{max-height:380px}
+    .principle .p-txt{padding:32px 26px}
+    .p-steps{grid-template-columns:1fr}
+    .tiles .tile:nth-child(4){order:5}.tiles .tile:nth-child(5){order:4}.tiles .tile:nth-child(6){order:7}.tiles .tile:nth-child(7){order:6}
+    .tiles .tile:nth-child(1){order:1}.tiles .tile:nth-child(2){order:2}.tiles .tile:nth-child(3){order:3}.tiles .tile:nth-child(8){order:8}
     .tile.photo{min-height:260px}
-    .tiles .tile:nth-child(3){order:4}
-    .tiles .tile:nth-child(4){order:3}
-    .tiles .tile:nth-child(7){order:8}
-    .tiles .tile:nth-child(8){order:7}
-    .tiles .tile:nth-child(1){order:1}.tiles .tile:nth-child(2){order:2}.tiles .tile:nth-child(5){order:5}.tiles .tile:nth-child(6){order:6}
     .lnav .links a:not(.pill){display:none}
     .row{grid-template-columns:120px 1fr 56px;font-size:13px}
     .bars{padding:28px 22px}
@@ -240,23 +252,32 @@
         <p class="big-num" style="color:#fff">30<small> psi</small></p>
       </div>
       <div class="tile photo reveal"><video src="assets/closeup-out-valve.mp4" poster="assets/closeup-out-valve.jpg" autoplay muted loop playsinline aria-label="Close-up of the pressure control valve with its pull ring"></video></div>
+      <div class="tile dark principle reveal">
+        <div class="p-img"><img src="assets/principle.jpg" alt="Three tennis balls visibly squeezed by the pressure inside the rePressurizer"></div>
+        <div class="p-txt">
+          <span class="t-k">How it works</span>
+          <h3>30 psi at work.</h3>
+          <p>A tennis ball goes flat because the air inside slowly leaks out through the rubber. rePressurizer surrounds the balls with air at 30 psi — so much pressure that you can see the balls squeeze in.</p>
+          <p>That pressure pushes air back into the core. Leave them to rest, release the pressure, and they pop back round with fresh-can bounce.</p>
+          <ol class="p-steps"><li><b>Flat ball</b>Air has leaked out of the core</li><li><b>Under pressure</b>Air is pushed back in</li><li><b>Released</b>Round again, bouncing like new</li></ol>
+        </div>
+      </div>
       <div class="tile photo reveal"><video src="assets/closeup-in-valve.mp4" poster="assets/closeup-in-valve.jpg" autoplay muted loop playsinline aria-label="Close-up of the Schrader inflation valve"></video></div>
       <div class="tile reveal">
         <span class="t-k">Standard Schrader valve</span>
         <h3>Works with the pump you already own.</h3>
         <p>The same valve used on car, motorcycle and most bike tires. Ball pumps, floor pumps, tire inflators, even the air hose at a gas station.</p>
       </div>
-      <div class="tile reveal">
-        <span class="t-k">Pull-to-release</span>
-        <h3>One pull. Pressure out.</h3>
-        <p>Pull the ring on the control valve for a few seconds to release the air safely. When the hissing stops, open the lid. No tools, no sudden burst.</p>
-      </div>
-      <div class="tile photo reveal"><img src="assets/product-pressurized.jpg" alt="Tennis balls compressed inside the rePressurizer under pressure"></div>
       <div class="tile photo reveal"><video src="assets/closeup-pin.mp4" poster="assets/closeup-pin.jpg" autoplay muted loop playsinline aria-label="Close-up of the securing pin locking the lid"></video></div>
       <div class="tile reveal">
         <span class="t-k">Air-tight securing pin</span>
         <h3>Feel the click. Know it's sealed.</h3>
         <p>The securing pin only slides in once the lid is fully tightened. It's visual and tactile proof the canister is air-tight, so pressure stays stable for as long as you store your balls.</p>
+      </div>
+      <div class="tile reveal wide">
+        <span class="t-k">Pull-to-release</span>
+        <h3>One pull. Pressure out.</h3>
+        <p>Pull the ring on the control valve for a few seconds to release the air safely. When the hissing stops, open the lid. No tools, no sudden burst.</p>
       </div>
     </div>
   </div>
