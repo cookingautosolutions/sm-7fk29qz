@@ -168,6 +168,15 @@
   .tw-bar.on{display:block}
   .tw-bar a{color:#fff;font-weight:600;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
   .tw-bar a:hover{opacity:.85}
+  .tw-bar .tw-l1{margin-right:14px}
+  @media (max-width:560px){.tw-bar{font-size:14px;padding:9px 12px}.tw-bar .tw-l1{display:block;margin:0}}
+  /* Taiwan-only elements (Chinese hints / DM button), shown with body.tw */
+  .tw-only{display:none}
+  body.tw .tw-only{display:block}
+  .tw-dm{margin-top:14px}
+  .btn.tw-dm-btn{display:block;box-sizing:border-box;width:200px;margin:0 auto;padding:9px 12px;font-size:15px;line-height:1.35;background:transparent;border:1.5px solid var(--orange);color:#fff;border-radius:26px;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+  .tw-hint{font-size:13px;line-height:1.5;margin:8px 0 0;color:#a1a1a6;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+  .tw-hint.dark{color:#6e6e73}
 
   .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s ease,transform .9s ease}
   .reveal.in{opacity:1;transform:none}
@@ -194,7 +203,7 @@
 </head>
 <body>
 
-<div class="tw-bar" id="tw-bar" lang="zh-Hant-TW">台灣買家：美國同價、台灣出貨 → <a href="https://ig.me/m/cookingtennis_global" target="_blank" rel="noopener" data-track="tw-banner">IG 私訊</a></div>
+<div class="tw-bar" id="tw-bar" lang="zh-Hant-TW"><span class="tw-l1">台灣直購，另有折扣</span><a href="https://ig.me/m/cookingtennis_global" target="_blank" rel="noopener" data-track="tw-banner">IG 私訊輸入「台灣想買」→</a></div>
 <div class="gnav"><div class="wrap"><img src="assets/logo-dark.png" alt="ZERO WASTE · COOKING tennis"><span>Designed in California and Taichung</span></div></div>
 <nav class="lnav"><div class="wrap">
   <a class="name" href="#top"><img src="assets/logo-icon.png" alt="" width="30" height="30">rePressurizer</a>
@@ -352,7 +361,8 @@
         <span class="ig-sub">Official rePressurizer support on Instagram</span>
       </a>
       <p>Still have a question? Send us a message on Instagram.</p>
-      <a class="btn ig" href="https://www.instagram.com/cookingtennis_global/" target="_blank" rel="noopener">Message us on Instagram</a>
+      <a class="btn ig" id="ig-dm" href="https://www.instagram.com/cookingtennis_global/" target="_blank" rel="noopener">Message us on Instagram</a>
+      <p class="tw-only tw-hint dark" lang="zh-Hant-TW">私訊輸入：台灣想買</p>
       <div class="ig-qr">
         <img src="assets/ig-qr.png" alt="QR code for Instagram @cookingtennis_global" width="160" height="160">
         <p>Or scan with your phone to open @cookingtennis_global</p>
@@ -367,6 +377,9 @@
     <h2 class="reveal">Play longer.<br>Spend less.<br>Bounce like new.</h2>
     <p class="lede reveal">Available on Amazon in the US, Canada and Mexico.</p>
     <a class="btn reveal" href="#buy" data-amazon>Buy on Amazon US</a>
+    <div class="tw-only tw-dm" lang="zh-Hant-TW">
+      <a class="btn tw-dm-btn" href="https://ig.me/m/cookingtennis_global" target="_blank" rel="noopener" data-track="tw-buy">IG 私訊「台灣想買」<br>另有折扣</a>
+    </div>
     <div class="regions reveal">
       <a href="https://www.amazon.com/dp/B0GBVD3HX3" target="_blank" rel="noopener">Taiwan · ships via Amazon.com</a>
       <a href="https://www.amazon.ca/shops/cookingtennis" target="_blank" rel="noopener">Amazon Canada</a>
@@ -393,7 +406,12 @@
 
   // Taiwan banner: visible only when the page is opened with ?tw=1 (e.g. from Taiwan ads)
   const IS_TW = new URLSearchParams(location.search).get("tw") === "1";
-  if (IS_TW) document.getElementById("tw-bar").classList.add("on");
+  if (IS_TW) {
+    document.getElementById("tw-bar").classList.add("on");
+    document.body.classList.add("tw");
+    // Taiwan visitors: the support button opens a DM (ig.me) instead of the profile page
+    document.getElementById("ig-dm").href = "https://ig.me/m/cookingtennis_global";
+  }
 
   // Meta Pixel: paste the Pixel ID from Meta Events Manager here. Empty = pixel off.
   const META_PIXEL_ID = "1161334319734713";
